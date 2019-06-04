@@ -9,7 +9,7 @@
 #define LINHA  22000
 #define COLUNA  22000
 #define NUMLINHAMACRO LINHA
-#define NUM_THREADS 4
+#define NUM_THREADS 8
 
 
 typedef struct arg_struct {
@@ -22,6 +22,7 @@ int numPrimos = 0;
 int matrix[LINHA][COLUNA];
 int manager[NUMLINHAMACRO];
 int status[NUM_THREADS];
+pthread_mutex_t lock;
 
 void initMacroManager(){
     for(int i = 0 ; i < NUMLINHAMACRO; i ++){
@@ -89,8 +90,9 @@ void *worker(void* arg){
        // printf("thred %d, numero %d nuemro de primos%d\n",id,value,numPrimos);
         aux = aux + countPrimes(value);
        // printf("valor do aux %d\n",aux);
-
+    pthread_mutex_lock(&lock);
     numPrimos = numPrimos+aux;
+    pthread_mutex_unlock(&lock);
 
     status[idd] = 2;
     pthread_exit(NULL);
