@@ -2,13 +2,14 @@
 #include <stdio.h>
 #include <math.h>
 #include <pthread.h>
+#include <time.h>
 
 
 
 #define LINHA  22000
 #define COLUNA  22000
-#define NUMLINHAMACRO 22000
-#define NUM_THREADS 8
+#define NUMLINHAMACRO LINHA
+#define NUM_THREADS 4
 
 
 typedef struct arg_struct {
@@ -101,26 +102,20 @@ int serial(){
     int aux = 0;
     for(int i = 0 ; i < NUMLINHAMACRO; i++){
         aux = aux + countPrimes(i);
-
-        printf("%d", i);
+        //printf("%d",aux);
     }
 
 return aux;
 }
-
-int main(){
-    int countPrecessed = 0;
-    pthread_t threads[NUM_THREADS];
-    //int valueserial = serial();
-    //printf("%d\n",valueserial);
-    initMacroManager();
-    initMatrix();
-//  numPrimos = countPrimes(0,0,LINHA,COLUNA);
-   // printf("%d",numPrimos);
+void initStatusTheread(){
     for(int i = 0 ; i < NUM_THREADS ; i ++){
         status[i] = 0;
     }
-
+}
+int parallel(){
+    numPrimos = 0;
+    int countPrecessed = 0;
+    pthread_t threads[NUM_THREADS];
     while(countPrecessed < NUMLINHAMACRO){
 
         for(int i = 0 ; i < NUM_THREADS ; i ++){
@@ -136,13 +131,40 @@ int main(){
             }else if(status[i] == 2){ status[i] = 0;}
         }
 
-
-
+   }
+    for(int i = 0 ; i < NUM_THREADS ; i ++){
+        pthread_join(threads[i], NULL);
    }
 
 
+return numPrimos;
+}
+int main(){
 
-    printf("%d",numPrimos );
+
+    //int valueserial = serial();
+    //printf("%d\n",valueserial);
+    initMacroManager();
+    initMatrix();
+    // numPrimos = countPrimes(0,0,LINHA,COLUNA);
+   // printf("%d",numPrimos);
+    initStatusTheread();
+    clock_t t;
+    t = clock();
+     printf("%d\n",serial());
+    t = clock() - t;
+    double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
+     printf("Serial demorou %f segundos\n", time_taken);
+
+    t = clock();
+    printf("%d\n",parallel());
+     printf("%d\n",numPrimos);
+
+    t = clock() - t;
+    time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
+     printf("paralelo demorou %f segundos\n", time_taken);
+
+
 
 
 
